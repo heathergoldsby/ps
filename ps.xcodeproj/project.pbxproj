@@ -239,7 +239,7 @@
 		424419EA15861127009863BE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Michigan State University";
 			};
 			buildConfigurationList = 424419ED15861127009863BE /* Build configuration list for PBXProject "ps" */;
@@ -305,7 +305,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 42441A7E158616AF009863BE /* ps.xcconfig */;
 			buildSettings = {
-				CLANG_CXX_LIBRARY = "compiler-default";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 			};
 			name = Debug;
@@ -314,7 +313,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 42441A7E158616AF009863BE /* ps.xcconfig */;
 			buildSettings = {
-				CLANG_CXX_LIBRARY = "compiler-default";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 			};
 			name = Release;

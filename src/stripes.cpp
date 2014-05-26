@@ -3,7 +3,7 @@
 #include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
 #include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_nand_ancestor.h>
 //#include <ea/digital_evolution/population_founder.h>
-//#include <ea/line_of_descent.h>
+#include <ea/line_of_descent.h>
 //#include "lod_knockouts.h"
 
 
@@ -112,7 +112,7 @@ struct configuration : public default_configuration {
  */
 typedef digital_evolution
 < configuration
-, organism< >
+, organism < >
 , multibirth_selfrep_not_ancestor
 , recombination::asexual
 , round_robin
@@ -151,7 +151,7 @@ typedef digital_evolution
 // hjg - ask about lod...
 //! Metapopulation definition:
 typedef metapopulation
-< subpopulation<ea_type>,
+< subpopulation<ea_type, constant, ea_type, directS, default_lod_traits >,
 ancestors::default_representation,
 mutation::operators::subpopulation_mutator<ea_type::mutation_operator_type>
 > mea_type;
@@ -208,6 +208,8 @@ public:
         add_event<permute_stripes>(ea);
         add_event<task_performed_tracking>(ea);
         add_event<task_switch_tracking>(ea);
+        add_event<lod_event>(ea);
+        add_event<datafiles::mrca_lineage>(ea);
         //add_event<propagule_size_tracking>(ea);
         //        add_event<population_founder_event>(this,ea);
         //add_event<reward_tracking>(ea);
