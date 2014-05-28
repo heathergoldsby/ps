@@ -2,9 +2,10 @@
 #include <ea/cmdline_interface.h>
 #include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
 #include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_nand_ancestor.h>
-//#include <ea/digital_evolution/population_founder.h>
+#include <ea/digital_evolution/population_founder.h>
 #include <ea/line_of_descent.h>
-//#include "lod_knockouts.h"
+#include "lod_knockouts.h"
+#include "movie.h"
 
 
 using namespace ealib;
@@ -46,14 +47,15 @@ struct configuration : public default_configuration {
         append_isa<fixed_input>(ea);
         append_isa<output>(ea);
         append_isa<donate_res_to_group>(ea);
-        //        append_isa<get_xy>(ea);
         append_isa<if_equal>(ea);
         append_isa<if_not_equal>(ea);
         append_isa<jump_head>(ea);
         append_isa<is_neighbor>(ea);
         append_isa<is_origin>(ea);
-//        append_isa<get_epigenetic_info>(ea);
-//        append_isa<set_epigenetic_info>(ea);
+        
+        //        append_isa<get_xy>(ea);
+        //        append_isa<get_epigenetic_info>(ea);
+        //        append_isa<set_epigenetic_info>(ea);
         
         // SOMA
         //        append_isa<inc_propagule_size>(ea);
@@ -88,22 +90,22 @@ struct configuration : public default_configuration {
         
     }
     
-    //! Called to generate the initial EA population.
-    template <typename EA>
-    void initial_population(EA& ea) {
-        
-        int ancest = get<ANCESTOR>(ea, 0);
-        switch (ancest) {
-            case 0:
-                generate_ancestors(multibirth_selfrep_not_ancestor(), 1, ea);
-                break;
-            case 1:
-                generate_ancestors(multibirth_selfrep_not_nand_ancestor(), 1, ea);
-                break;
-        }
-        
-        
-    }
+//    //! Called to generate the initial EA population.
+//    template <typename EA>
+//    void initial_population(EA& ea) {
+//        // add founder to initial population
+//        int ancest = get<ANCESTOR>(ea, 0);
+//        switch (ancest) {
+//            case 0:
+//                generate_ancestors(multibirth_selfrep_not_ancestor(), 1, ea);
+//                break;
+//            case 1:
+//                generate_ancestors(multibirth_selfrep_not_nand_ancestor(), 1, ea);
+//                break;
+//        }
+//        
+//        
+//    }
     
 };
 
@@ -113,45 +115,16 @@ struct configuration : public default_configuration {
 typedef digital_evolution
 < configuration
 , organism < >
-, multibirth_selfrep_not_ancestor
+, multibirth_selfrep_not_nand_ancestor
 , recombination::asexual
 , round_robin
 , empty_facing_neighbor
 > ea_type;
 
 
-////template <typename EA>
-//struct mp_configuration : public default_configuration {
-//    template <typename EA>
-//    void initial_population(EA& ea) {
-//        for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-//            (*i).founder() = (**(*i).population().begin());
-//        }
-//    }
-//};
-
-
-//
-////! Meta-population definition.
-//typedef meta_population<
-//population_lod<population_founder<ea_type> >,
-//mp_configuration> mea_type;
-/*
-< typename Subpopulation
-, typename AncestorGenerator=ancestors::default_representation
-, typename MutationOperator=mutation::operators::no_mutation
-, typename RecombinationOperator=recombination::no_recombination
-, typename GenerationalModel=generational_models::isolated_subpopulations
-, typename EarlyStopCondition=dont_stop
-, typename UserDefinedConfiguration=default_configuration
-, typename PopulationGenerator=fill_metapopulation
-> class metapopulation {
-    */
-
-// hjg - ask about lod...
 //! Metapopulation definition:
 typedef metapopulation
-< subpopulation<ea_type, constant, ea_type, directS, default_lod_traits >,
+< subpopulation<population_founder<ea_type>, constant, ea_type, directS, default_lod_traits >,
 ancestors::default_representation,
 mutation::operators::subpopulation_mutator<ea_type::mutation_operator_type>
 > mea_type;
@@ -198,7 +171,7 @@ public:
     }
     
     virtual void gather_tools() {
-        
+        add_tool<ealib::analysis::movie>(this);
     }
     
     virtual void gather_events(EA& ea) {
@@ -211,7 +184,7 @@ public:
         add_event<lod_event>(ea);
         add_event<datafiles::mrca_lineage>(ea);
         //add_event<propagule_size_tracking>(ea);
-        //        add_event<population_founder_event>(this,ea);
+        add_event<population_founder_event>(ea);
         //add_event<reward_tracking>(ea);
     }
 };
