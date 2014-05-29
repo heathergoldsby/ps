@@ -5,13 +5,13 @@
 #include <ea/digital_evolution/population_founder.h>
 #include <ea/line_of_descent.h>
 #include "lod_knockouts.h"
-#include "movie.h"
 
 
 using namespace ealib;
 
 #include "stripes.h"
-//#include "multi_founder.h"
+#include "multi_founder.h"
+#include "movie_multi.h"
 
 
 //! Configuration object for an EA.
@@ -91,22 +91,22 @@ struct configuration : public default_configuration {
         
     }
     
-//    //! Called to generate the initial EA population.
-//    template <typename EA>
-//    void initial_population(EA& ea) {
-//        // add founder to initial population
-//        int ancest = get<ANCESTOR>(ea, 0);
-//        switch (ancest) {
-//            case 0:
-//                generate_ancestors(multibirth_selfrep_not_ancestor(), 1, ea);
-//                break;
-//            case 1:
-//                generate_ancestors(multibirth_selfrep_not_nand_ancestor(), 1, ea);
-//                break;
-//        }
-//        
-//        
-//    }
+    //    //! Called to generate the initial EA population.
+    //    template <typename EA>
+    //    void initial_population(EA& ea) {
+    //        // add founder to initial population
+    //        int ancest = get<ANCESTOR>(ea, 0);
+    //        switch (ancest) {
+    //            case 0:
+    //                generate_ancestors(multibirth_selfrep_not_ancestor(), 1, ea);
+    //                break;
+    //            case 1:
+    //                generate_ancestors(multibirth_selfrep_not_nand_ancestor(), 1, ea);
+    //                break;
+    //        }
+    //
+    //
+    //    }
     
 };
 
@@ -125,7 +125,7 @@ typedef digital_evolution
 
 //! Metapopulation definition:
 typedef metapopulation
-< subpopulation<population_founder<ea_type>, constant, ea_type, directS, default_lod_traits >,
+< subpopulation<multi_founder<ea_type>, constant, ea_type, directS, default_lod_traits >,
 ancestors::default_representation,
 mutation::operators::subpopulation_mutator<ea_type::mutation_operator_type>
 > mea_type;
@@ -172,16 +172,21 @@ public:
     }
     
     virtual void gather_tools() {
-        add_tool<ealib::analysis::movie>(this);
+        add_tool<ealib::analysis::movie_multi>(this);
     }
     
     virtual void gather_events(EA& ea) {
+        //        add_event<ts_replication_propagule>(this,ea);
+        //        add_event<ps_size_propagule2>(this,ea);
+        //        add_event<datafiles::fitness_dat>(ea);
         add_event<permute_stripes>(ea);
         add_event<task_performed_tracking>(ea);
         add_event<task_switch_tracking>(ea);
         add_event<lod_event>(ea);
         add_event<datafiles::mrca_lineage>(ea);
-        add_event<population_founder_event>(ea);
+        //add_event<propagule_size_tracking>(ea);
+        add_event<multi_founder_event>(ea);
+        //add_event<reward_tracking>(ea);
     }
 };
 LIBEA_CMDLINE_INSTANCE(mea_type, cli);

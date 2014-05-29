@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0500"
+   LastUpgradeVersion = "0510"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "48DEB45419376501002F8846"
-               BuildableName = "stripes"
-               BlueprintName = "stripes"
+               BlueprintIdentifier = "48FF4C8419379E17001F0183"
+               BuildableName = "stripes_multi"
+               BlueprintName = "stripes_multi"
                ReferencedContainer = "container:ps.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "48DEB45419376501002F8846"
-            BuildableName = "stripes"
-            BlueprintName = "stripes"
+            BlueprintIdentifier = "48FF4C8419379E17001F0183"
+            BuildableName = "stripes_multi"
+            BlueprintName = "stripes_multi"
             ReferencedContainer = "container:ps.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -52,20 +52,20 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "48DEB45419376501002F8846"
-            BuildableName = "stripes"
-            BlueprintName = "stripes"
+            BlueprintIdentifier = "48FF4C8419379E17001F0183"
+            BuildableName = "stripes_multi"
+            BlueprintName = "stripes_multi"
             ReferencedContainer = "container:ps.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-c stripes.cfg"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-l checkpoint-5000.xml --analyze movie --ea.analysis.input.filename lod-5000.xml"
-            isEnabled = "NO">
+            argument = "-l checkpoint-5000.xml --analyze movie_multi --ea.analysis.input.filename lod-5000.xml"
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
@@ -80,9 +80,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "48DEB45419376501002F8846"
-            BuildableName = "stripes"
-            BlueprintName = "stripes"
+            BlueprintIdentifier = "48FF4C8419379E17001F0183"
+            BuildableName = "stripes_multi"
+            BlueprintName = "stripes_multi"
             ReferencedContainer = "container:ps.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

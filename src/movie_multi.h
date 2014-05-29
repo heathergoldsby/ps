@@ -17,7 +17,7 @@ namespace ealib {
         
         /*! lod_movie
          */
-        LIBEA_ANALYSIS_TOOL(movie) {
+        LIBEA_ANALYSIS_TOOL(movie_multi) {
             
             line_of_descent<EA> lod = lod_load(get<ANALYSIS_INPUT>(ea), ea);
             
@@ -26,18 +26,32 @@ namespace ealib {
             typename EA::individual_ptr_type control_sp = ea.make_individual();
             control_sp->ea().rng().reset(get<RNG_SEED>((i->ea())));
             
-        
-            typename EA::individual_type::ea_type::individual_type g (i->ea().founder());
-            typename EA::individual_type::ea_type::individual_ptr_type o = i->ea().copy_individual(g);
-            o->hw().initialize();
-
+            /*
+             offspring.population().empty()) {
+             for(typename EA::individual_type::ea_type::iterator j=offspring.begin(); j!=offspring.end(); ++j) {
+             
+             typename EA::individual_type::ea_type::individual_ptr_type o = ea.copy_individual(*j);
+             offspring.founder().insert(offspring.founder().end(), o);
+             
+             }*/
             
-            control_sp->ea().insert(control_sp->ea().end(), o);
+            for(typename EA::individual_type::ea_type::population_type::iterator j=i->ea().founder().begin(); j!=i->ea().founder().end(); ++j) {
+                typename EA::individual_type::ea_type::individual_ptr_type o = i->ea().copy_individual(**j);
+                o->hw().initialize();
+                control_sp->ea().insert(control_sp->ea().end(), o);
+            }
             
-
+            //            typename EA::individual_type::ea_type::individual_type g (i->ea().founder());
+            //            typename EA::individual_type::ea_type::individual_ptr_type o = i->ea().copy_individual(g);
+            //            o->hw().initialize();
+            //
+            //
+            //            control_sp->ea().insert(control_sp->ea().end(), o);
+            //
+            
             
             int update_max = get<METAPOP_COMPETITION_PERIOD>(ea);
-
+            
             df.write(get<SPATIAL_X>(ea));
             df.write(get<SPATIAL_Y>(ea));
             df.endl();
@@ -50,7 +64,7 @@ namespace ealib {
                         typename EA::individual_type::ea_type::environment_type::location_ptr_type l = control_sp->ea().env().location(x,y);
                         if (l->occupied()) {
                             std::string lt = get<LAST_TASK>(*(l->inhabitant()),"");
-
+                            
                             if(lt == "not") {
                                 df.write("1");
                             }
@@ -61,20 +75,20 @@ namespace ealib {
                                 df.write("0");
                             }
                             
-            
+                            
                         } else {
                             df.write("-1");
                         }
-                    
+                        
                     }
                 }
                 df.endl();
-
+                
             }
             
             df.endl();
             
-             }
+        }
     }
 }
 #endif
