@@ -40,6 +40,80 @@ LIBEA_MD_DECL(NUM_PROPAGULE_CELL, "ea.stripes.num_propagule_cell", int);
 
 
 
+template <typename EA>
+void eval_permute_stripes(EA& ea) {
+    // vert stripes
+    double one_fit_not = 0;
+    double one_fit_nand = 0;
+    double two_fit_not = 0;
+    double two_fit_nand = 0;
+    // horizontal stripes
+    double three_fit_not = 0;
+    double three_fit_nand = 0;
+    double four_fit_not = 0;
+    double four_fit_nand = 0;
+    // diagonal stripes
+    double five_fit_not = 0;
+    double five_fit_nand = 0;
+    double six_fit_not = 0;
+    double six_fit_nand = 0;
+    
+    
+    int num_org = 0;
+    
+    for (int x=0; x < get<SPATIAL_X>(ea); ++x) {
+        for (int y=0; y<get<SPATIAL_Y>(ea); ++y){
+            typename EA::environment_type::location_ptr_type l = ea.env().location(x,y);
+            if (!l->occupied()) {
+                continue;
+            }
+            
+            std::string lt = get<LAST_TASK>(*(l->inhabitant()),"");
+            // Vertical stripes!
+            if((y % 2) == 0) {
+                if (lt == "nand") { ++one_fit_nand; }
+                if (lt == "not") { ++two_fit_not; }
+            } else {
+                if(lt == "not") { ++one_fit_not; }
+                if (lt == "nand") { ++two_fit_nand; }
+            }
+            
+            // Horizontal stripes
+            if ((x % 2) == 0) {
+                if (lt == "nand") { ++three_fit_nand; }
+                if (lt == "not") { ++four_fit_not; }
+            } else {
+                if(lt == "not") { ++three_fit_not; }
+                if (lt == "nand") { ++four_fit_nand; }
+            }
+            
+            // Diagonal stripes
+            if (((x % 2) == 0) && ((y % 2) == 0 )) {
+                if(lt == "not") { ++five_fit_not; }
+                if (lt == "nand") { ++six_fit_nand; }
+            } else {
+                if(lt == "nand") { ++five_fit_nand; }
+                if (lt == "not") { ++six_fit_not; }
+            }
+        }
+    }
+    
+    double tmp_one_fit = (one_fit_not + 1)  * (one_fit_nand + 1);
+    double tmp_two_fit = (two_fit_not + 1)  * (two_fit_nand + 1);
+    double tmp_three_fit = (three_fit_not + 1)  * (three_fit_nand + 1);
+    double tmp_four_fit = (four_fit_not + 1)  * (four_fit_nand + 1);
+    double tmp_five_fit = (five_fit_not + 1)  * (five_fit_nand + 1);
+    double tmp_six_fit = (six_fit_not + 1)  * (six_fit_nand + 1);
+    double tmp_fit = std::max(tmp_one_fit, tmp_two_fit);
+    tmp_fit = std::max(tmp_fit, tmp_three_fit);
+    tmp_fit = std::max(tmp_fit, tmp_four_fit);
+    tmp_fit = std::max(tmp_fit, tmp_five_fit);
+    tmp_fit = std::max(tmp_fit, tmp_six_fit);
+    
+    put<STRIPE_FIT>(tmp_fit,ea);
+}
+
+
 
 /*! Compete to evolve stripes -- even number rows nand; odd number rows not
  */
@@ -48,26 +122,7 @@ struct permute_stripes : periodic_event<METAPOP_COMPETITION_PERIOD,EA> {
     permute_stripes(EA& ea) : periodic_event<METAPOP_COMPETITION_PERIOD,EA>(ea), _df("permute_stripes.dat") {
         _df.add_field("update")
         .add_field("mean_fitness")
-        .add_field("max_fitness")
-        .add_field("mean_one_fitness")
-        .add_field("max_one_fitness")
-        .add_field("mean_two_fitness")
-        .add_field("max_two_fitness")
-        .add_field("mean_three_fitness")
-        .add_field("max_three_fitness")
-        .add_field("mean_four_fitness")
-        .add_field("max_four_fitness")
-        .add_field("mean_five_fitness")
-        .add_field("max_five_fitness")
-        .add_field("mean_six_fitness")
-        .add_field("max_six_fitness")
-        .add_field("mean_num_not")
-        .add_field("max_num_not")
-        .add_field("mean_num_nand")
-        .add_field("max_num_nand")
-        .add_field("mean_num_org")
-        .add_field("max_num_org");
-
+        .add_field("max_fitness");
     }
     
     virtual ~permute_stripes() {
@@ -76,157 +131,24 @@ struct permute_stripes : periodic_event<METAPOP_COMPETITION_PERIOD,EA> {
     virtual void operator()(EA& ea) {
         using namespace boost::accumulators;
         accumulator_set<double, stats<tag::mean, tag::max> > fit;
-        accumulator_set<double, stats<tag::mean, tag::max> > one_fit;
-        accumulator_set<double, stats<tag::mean, tag::max> > two_fit;
-        accumulator_set<double, stats<tag::mean, tag::max> > three_fit;
-        accumulator_set<double, stats<tag::mean, tag::max> > four_fit;
-        accumulator_set<double, stats<tag::mean, tag::max> > five_fit;
-        accumulator_set<double, stats<tag::mean, tag::max> > six_fit;
-        accumulator_set<double, stats<tag::mean, tag::max> > num_not;
-        accumulator_set<double, stats<tag::mean, tag::max> > num_nand;
-        accumulator_set<double, stats<tag::mean, tag::max> > num_org;
 
-        
-        
         
         // calculate "fitness":
         for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
-            // vert stripes
-            double one_fit_not = 0;
-            double one_fit_nand = 0;
-            double two_fit_not = 0;
-            double two_fit_nand = 0;
-            // horizontal stripes
-            double three_fit_not = 0;
-            double three_fit_nand = 0;
-            double four_fit_not = 0;
-            double four_fit_nand = 0;
-            // diagonal stripes
-            double five_fit_not = 0;
-            double five_fit_nand = 0;
-            double six_fit_not = 0;
-            double six_fit_nand = 0;
+           
+            eval_permute_stripes(i->ea());
             
-            double tmp_num_not = 0;
-            double tmp_num_nand = 0;
+            // copy the stripe fit to the accumulator and also the subpop
+            double sf =get<STRIPE_FIT>(i->ea());
+            fit(sf);
+            put<STRIPE_FIT>(sf, *i);
             
-            int tmp_num_org = 0;
-
-
-            for(typename EA::individual_type::ea_type::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
-                ++tmp_num_org;
-                int x =(i->ea().env().location((**j).position())->x);
-                int y =(i->ea().env().location((**j).position())->y);
-                std::string lt = get<LAST_TASK>(**j,"");
-                if (((i->ea().env().location((**j).position())->y) % 2) == 0) {
-                    if (lt == "nand") {
-                        ++one_fit_nand;
-                        ++tmp_num_nand;
-                    }
-                    if (lt == "not") {
-                        ++two_fit_not;
-                        ++tmp_num_not;
-                    }
-                } else {
-                    if(lt == "not") {
-                        ++one_fit_not;
-                        ++tmp_num_not;
-                    }
-                    if (lt == "nand") {
-                        ++two_fit_nand;
-                        ++tmp_num_nand;
-                    }
-                }
-                
-                if (((i->ea().env().location((**j).position())->x) % 2) == 0) {
-                    if (lt == "nand") {
-                        ++three_fit_nand;
-                    }
-                    if (lt == "not") {
-                        ++four_fit_not;
-                    }
-                } else {
-                    if(lt == "not") {
-                        ++three_fit_not;
-                    }
-                    if (lt == "nand") {
-                        ++four_fit_nand;
-                    }
-                }
-                
-                
-                if (((i->ea().env().location((**j).position())->x) % 2) ==
-                    ((i->ea().env().location((**j).position())->y) % 2)) {
-                    
-                    if(lt == "not") {
-                        ++five_fit_not;
-                    }
-                    if (lt == "nand") {
-                        ++six_fit_nand;
-                    }
-                } else {
-                    if(lt == "nand") {
-                        ++five_fit_nand;
-                    }
-                    if (lt == "not") {
-                        ++six_fit_not;
-                    }
-                }
-
-            }
-            double tmp_one_fit = (one_fit_not + 1)  * (one_fit_nand + 1);
-            double tmp_two_fit = (two_fit_not + 1)  * (two_fit_nand + 1);
-            double tmp_three_fit = (three_fit_not + 1)  * (three_fit_nand + 1);
-            double tmp_four_fit = (four_fit_not + 1)  * (four_fit_nand + 1);
-            double tmp_five_fit = (five_fit_not + 1)  * (five_fit_nand + 1);
-            double tmp_six_fit = (six_fit_not + 1)  * (six_fit_nand + 1);
-            double tmp_fit = std::max(tmp_one_fit, tmp_two_fit);
-            tmp_fit = std::max(tmp_fit, tmp_three_fit);
-            tmp_fit = std::max(tmp_fit, tmp_four_fit);
-            tmp_fit = std::max(tmp_fit, tmp_five_fit);
-            tmp_fit = std::max(tmp_fit, tmp_six_fit);
-            
-            
-            fit(tmp_fit);
-            one_fit(tmp_one_fit);
-            two_fit(tmp_two_fit);
-            three_fit(tmp_three_fit);
-            four_fit(tmp_four_fit);
-            five_fit(tmp_five_fit);
-            six_fit(tmp_six_fit);
-            
-            num_org(tmp_num_org);
-            num_nand(tmp_num_nand);
-            num_not(tmp_num_not);
-
-
-            put<STRIPE_FIT>(tmp_fit,*i);
         }
         
-        
-
         
         _df.write(ea.current_update())
         .write(mean(fit))
         .write(max(fit))
-        .write(mean(one_fit))
-        .write(max(one_fit))
-        .write(mean(two_fit))
-        .write(max(two_fit))
-        .write(mean(three_fit))
-        .write(max(three_fit))
-        .write(mean(four_fit))
-        .write(max(four_fit))
-        .write(mean(five_fit))
-        .write(max(five_fit))
-        .write(mean(six_fit))
-        .write(max(six_fit))
-        .write(mean(num_not))
-        .write(max(num_not))
-        .write(mean(num_nand))
-        .write(max(num_nand))
-        .write(mean(num_org))
-        .write(max(num_org))
         .endl();
         
         std::size_t n=get<META_POPULATION_SIZE>(ea);
@@ -255,14 +177,6 @@ struct permute_stripes : periodic_event<METAPOP_COMPETITION_PERIOD,EA> {
                 (*i)->insert((*i)->end(), o);
             }
         }
-        
-
-        
-
-        //mutate
-        //mutate(offspring.begin(), offspring.end(), ea);
-        
-
         
         
         // swap populations

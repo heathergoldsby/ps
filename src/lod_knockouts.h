@@ -18,97 +18,7 @@
 namespace ealib {
     namespace analysis {
         
-        template <typename EA>
-        void eval_permute_stripes(EA& ea) {
-            // vert stripes
-            double one_fit_not = 0;
-            double one_fit_nand = 0;
-            double two_fit_not = 0;
-            double two_fit_nand = 0;
-            // horizontal stripes
-            double three_fit_not = 0;
-            double three_fit_nand = 0;
-            double four_fit_not = 0;
-            double four_fit_nand = 0;
-            // diagonal stripes
-            double five_fit_not = 0;
-            double five_fit_nand = 0;
-            double six_fit_not = 0;
-            double six_fit_nand = 0;
-            
-            
-            
-            for(typename EA::population_type::iterator j=ea.population().begin(); j!=ea.population().end(); ++j) {
-                std::string lt = get<LAST_TASK>(**j,"");
-                if (((ea.env().location((**j).position())->y) % 2) == 0) {
-                    if (lt == "nand") {
-                        ++one_fit_nand;
-                    }
-                    if (lt == "not") {
-                        ++two_fit_not;
-                    }
-                } else {
-                    if(lt == "not") {
-                        ++one_fit_not;
-                    }
-                    if (lt == "nand") {
-                        ++two_fit_nand;
-                    }
-                }
                 
-                if (((ea.env().location((**j).position())->x) % 2) == 0) {
-                    if (lt == "nand") {
-                        ++three_fit_nand;
-                    }
-                    if (lt == "not") {
-                        ++four_fit_not;
-                    }
-                } else {
-                    if(lt == "not") {
-                        ++three_fit_not;
-                    }
-                    if (lt == "nand") {
-                        ++four_fit_nand;
-                    }
-                }
-                
-                
-                if (((ea.env().location((**j).position())->x) % 2) ==
-                    ((ea.env().location((**j).position())->y) % 2)) {
-                    
-                    if(lt == "not") {
-                        ++five_fit_not;
-                    }
-                    if (lt == "nand") {
-                        ++six_fit_nand;
-                    }
-                } else {
-                    if(lt == "nand") {
-                        ++five_fit_nand;
-                    }
-                    if (lt == "not") {
-                        ++six_fit_not;
-                    }
-                }
-                
-            }
-            double tmp_one_fit = (one_fit_not + 1)  * (one_fit_nand + 1);
-            double tmp_two_fit = (two_fit_not + 1)  * (two_fit_nand + 1);
-            double tmp_three_fit = (three_fit_not + 1)  * (three_fit_nand + 1);
-            double tmp_four_fit = (four_fit_not + 1)  * (four_fit_nand + 1);
-            double tmp_five_fit = (five_fit_not + 1)  * (five_fit_nand + 1);
-            double tmp_six_fit = (six_fit_not + 1)  * (six_fit_nand + 1);
-            double tmp_fit = std::max(tmp_one_fit, tmp_two_fit);
-            tmp_fit = std::max(tmp_fit, tmp_three_fit);
-            tmp_fit = std::max(tmp_fit, tmp_four_fit);
-            tmp_fit = std::max(tmp_fit, tmp_five_fit);
-            tmp_fit = std::max(tmp_fit, tmp_six_fit);
-            
-            
-            put<STRIPE_FIT>(tmp_fit,ea);
-        }
-
-        
         /*! lod_knockouts reruns each subpopulation along a line of descent and records how the subpopulation
          fares with key coordination instructions removed.
          
@@ -151,21 +61,32 @@ namespace ealib {
                 */
                 
                 // Setup founders!
+                int count =0;
                 
                 for(typename EA::individual_type::ea_type::population_type::iterator j=i->ea().founder().begin(); j!=i->ea().founder().end(); ++j) {
+                    
+                    
+                    int s = get<POPULATION_SIZE>(i->ea());
+                    std::size_t pos = i->ea().rng()(s);
+                    
+                    
                     
                     typename EA::individual_type::ea_type::individual_ptr_type o1 = i->ea().copy_individual(**j);
                     o1->hw().initialize();
                     control->ea().insert(control->ea().end(), o1);
+                    control->ea().env().move_ind(count, pos);
+
                     
                     typename EA::individual_type::ea_type::individual_ptr_type o2 = i->ea().copy_individual(**j);
                     o2->hw().initialize();
                     knockout_rx->ea().insert(knockout_rx->ea().end(), o2);
+
                     /*
                     typename EA::individual_type::ea_type::individual_ptr_type o3 = i->ea().copy_individual(**j);
                     o3->hw().initialize();
                     knockout_location->ea().insert(knockout_location->ea().end(), o3);
                      */
+                    ++count;
                     
                 }
                 
