@@ -115,6 +115,8 @@ struct permute_stripes : periodic_event<METAPOP_COMPETITION_PERIOD,EA> {
 
             for(typename EA::individual_type::ea_type::population_type::iterator j=i->population().begin(); j!=i->population().end(); ++j) {
                 ++tmp_num_org;
+                int x =(i->ea().env().location((**j).position())->x);
+                int y =(i->ea().env().location((**j).position())->y);
                 std::string lt = get<LAST_TASK>(**j,"");
                 if (((i->ea().env().location((**j).position())->y) % 2) == 0) {
                     if (lt == "nand") {

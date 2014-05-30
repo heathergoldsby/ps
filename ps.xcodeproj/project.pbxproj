@@ -100,6 +100,7 @@
 		48C5840D19365A6900C02CA1 /* multi_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multi_founder.h; sourceTree = "<group>"; };
 		48DEB46219376501002F8846 /* stripes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stripes; sourceTree = BUILT_PRODUCTS_DIR; };
 		48FF4C9219379E17001F0183 /* stripes_multi */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stripes_multi; sourceTree = BUILT_PRODUCTS_DIR; };
+		48FF4C941938A2C9001F0183 /* location_analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = location_analysis.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -202,6 +203,7 @@
 				487ACE231934F7C60016340B /* movie.h */,
 				48C5840D19365A6900C02CA1 /* multi_founder.h */,
 				48AC8AB0193762F600DA6945 /* movie_multi.h */,
+				48FF4C941938A2C9001F0183 /* location_analysis.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
