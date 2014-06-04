@@ -53,7 +53,7 @@ struct configuration : public default_configuration {
         append_isa<if_not_equal>(ea);
         append_isa<jump_head>(ea);
         append_isa<is_neighbor>(ea);
-        append_isa<is_origin>(ea);
+//        append_isa<is_origin>(ea);
         
         //        append_isa<get_xy>(ea);
         //        append_isa<get_epigenetic_info>(ea);
