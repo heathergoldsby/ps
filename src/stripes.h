@@ -22,6 +22,7 @@
 #include <ea/digital_evolution/discrete_spatial_environment.h>
 #include <ea/digital_evolution/utils/resource_consumption.h>
 #include <ea/digital_evolution/utils/task_switching.h>
+#include <ea/digital_evolution/population_founder.h>
 #include <ea/datafiles/reactions.h>
 #include <ea/cmdline_interface.h>
 #include <ea/metapopulation.h>

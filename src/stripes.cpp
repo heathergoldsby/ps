@@ -2,7 +2,6 @@
 #include <ea/cmdline_interface.h>
 #include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_ancestor.h>
 #include <ea/digital_evolution/ancestors/multi_birth_selfrep_not_nand_ancestor.h>
-#include <ea/digital_evolution/population_founder.h>
 #include <ea/line_of_descent.h>
 #include "lod_knockouts.h"
 #include "movie.h"
