@@ -26,29 +26,19 @@ namespace ealib {
             typename EA::individual_ptr_type control_sp = ea.make_individual();
             control_sp->ea().rng().reset(get<RNG_SEED>((i->ea())));
             
-            /*
-             offspring.population().empty()) {
-             for(typename EA::individual_type::ea_type::iterator j=offspring.begin(); j!=offspring.end(); ++j) {
-             
-             typename EA::individual_type::ea_type::individual_ptr_type o = ea.copy_individual(*j);
-             offspring.founder().insert(offspring.founder().end(), o);
-             
-             }*/
+            int count = 0;
+            int s = get<POPULATION_SIZE>(control_sp->ea());
+
             
             for(typename EA::individual_type::ea_type::population_type::iterator j=i->ea().founder().begin(); j!=i->ea().founder().end(); ++j) {
                 typename EA::individual_type::ea_type::individual_ptr_type o = i->ea().copy_individual(**j);
                 o->hw().initialize();
                 control_sp->ea().insert(control_sp->ea().end(), o);
+                std::size_t pos = control_sp->ea().rng()(s);
+                control_sp->ea().env().move_ind(count, pos);
+                ++count;
+                
             }
-            
-            //            typename EA::individual_type::ea_type::individual_type g (i->ea().founder());
-            //            typename EA::individual_type::ea_type::individual_ptr_type o = i->ea().copy_individual(g);
-            //            o->hw().initialize();
-            //
-            //
-            //            control_sp->ea().insert(control_sp->ea().end(), o);
-            //
-            
             
             int update_max = get<METAPOP_COMPETITION_PERIOD>(ea);
             

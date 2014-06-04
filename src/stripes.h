@@ -161,24 +161,36 @@ struct permute_stripes : periodic_event<METAPOP_COMPETITION_PERIOD,EA> {
 
         
         configurable_per_site m(get<GERM_MUTATION_PER_SITE_P>(ea));
+        int s = get<POPULATION_SIZE>(ea);
 
-        
         // Mutate and fill each offspring group.
         for(typename EA::population_type::iterator i=offspring.begin(); i!=offspring.end(); ++i) {
             assert((*i)->ea().population().size() == 1);
+
+            // clear founders...
+            (*i)->ea().founder().clear();
             
             // mutate it:
             mutate(**((*i)->ea().population().begin()),m,(*i)->ea());
             typename EA::individual_type::ea_type::individual_type g = (**((*i)->ea().population().begin()));
             
+            // add first org as founder
+            (*i)->ea().founder().insert((*i)->ea().founder().end(), (*i)->ea().copy_individual(g));
+            
             // and fill up the offspring population with copies of the germ:
             for (int k=1; k<get<NUM_PROPAGULE_CELL>(ea); ++k) {
                 typename EA::individual_type::ea_type::individual_ptr_type o = (*i)->ea().copy_individual(g);
                 (*i)->insert((*i)->end(), o);
+                
+                // move to random location
+                std::size_t pos = (*i)->ea().rng()(s);
+                (*i)->ea().env().move_ind(k, pos);
+                
+                // add org as founders
+                (*i)->ea().founder().insert((*i)->ea().founder().end(), (*i)->ea().copy_individual(*o));
             }
         }
-        
-        
+                
         // swap populations
         std::swap(ea.population(), offspring);
         

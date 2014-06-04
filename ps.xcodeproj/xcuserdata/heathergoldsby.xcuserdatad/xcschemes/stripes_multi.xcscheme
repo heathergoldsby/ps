@@ -61,11 +61,11 @@
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-c stripes.cfg"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-l checkpoint-5000.xml --analyze movie_multi --ea.analysis.input.filename lod-5000.xml"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-l checkpoint-5000.xml --analyze lod_knockouts --ea.analysis.input.filename lod-5000.xml"
