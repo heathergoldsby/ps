@@ -35,7 +35,7 @@ namespace ealib {
                 o->hw().initialize();
                 control_sp->ea().insert(control_sp->ea().end(), o);
                 std::size_t pos = control_sp->ea().rng()(s);
-                control_sp->ea().env().move_ind(count, pos);
+                control_sp->ea().env().swap_locations(count, pos);
                 ++count;
                 
             }

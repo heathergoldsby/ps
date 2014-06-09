@@ -65,15 +65,15 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-l checkpoint-5000.xml --analyze movie_multi --ea.analysis.input.filename lod-5000.xml"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-l checkpoint-5000.xml --analyze lod_knockouts --ea.analysis.input.filename lod-5000.xml"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-l checkpoint-500000.xml.gz --analyze lod_knockouts --ea.analysis.input.filename lod-500000.xml.gz"
-            isEnabled = "NO">
+            argument = "-l checkpoint-500000.xml.gz --analyze movie_multi --ea.analysis.input.filename lod-500000.xml.gz"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-l checkpoint-5000.xml --analyze location_analysis --ea.analysis.input.filename lod-5000.xml"

@@ -74,7 +74,7 @@ namespace ealib {
                     typename EA::individual_type::ea_type::individual_ptr_type o1 = i->ea().copy_individual(**j);
                     o1->hw().initialize();
                     control->ea().insert(control->ea().end(), o1);
-                    control->ea().env().move_ind(count, pos);
+                    control->ea().env().swap_locations(count, pos);
 
                     
                     typename EA::individual_type::ea_type::individual_ptr_type o2 = i->ea().copy_individual(**j);

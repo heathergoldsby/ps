@@ -185,7 +185,7 @@ struct permute_stripes : periodic_event<METAPOP_COMPETITION_PERIOD,EA> {
                 
                 // move to random location
                 std::size_t pos = (*i)->ea().rng()(s);
-                (*i)->ea().env().move_ind(k, pos);
+                (*i)->ea().env().swap_locations(k, pos);
                 
                 // add org as founders
                 (*i)->ea().founder().insert((*i)->ea().founder().end(), (*i)->ea().copy_individual(*o));
