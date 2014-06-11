@@ -33,7 +33,7 @@ exe stripes_multi :
 install dist : stripes_multi : <location>$(HOME)/bin ;
 
 exe stripes_res :
-    src/stripes_multi.cpp
+    src/stripes_res.cpp
     /libea//libea
     /libea//libea_runner
     : <include>./include <link>static

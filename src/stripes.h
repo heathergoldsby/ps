@@ -65,9 +65,6 @@ void eval_permute_stripes(EA& ea) {
     double six_fit_not = 0;
     double six_fit_nand = 0;
     
-    
-    int num_org = 0;
-    
     for (int x=0; x < get<SPATIAL_X>(ea); ++x) {
         for (int y=0; y<get<SPATIAL_Y>(ea); ++y){
             typename EA::environment_type::location_ptr_type l = ea.env().location(x,y);
