@@ -92,23 +92,6 @@ struct configuration : public default_configuration {
         
     }
     
-    //    //! Called to generate the initial EA population.
-    //    template <typename EA>
-    //    void initial_population(EA& ea) {
-    //        // add founder to initial population
-    //        int ancest = get<ANCESTOR>(ea, 0);
-    //        switch (ancest) {
-    //            case 0:
-    //                generate_ancestors(multibirth_selfrep_not_ancestor(), 1, ea);
-    //                break;
-    //            case 1:
-    //                generate_ancestors(multibirth_selfrep_not_nand_ancestor(), 1, ea);
-    //                break;
-    //        }
-    //
-    //
-    //    }
-    
 };
 
 
@@ -168,6 +151,7 @@ public:
         add_option<METAPOP_COMPETITION_PERIOD>(this);
         add_option<TOURNAMENT_SELECTION_N>(this);
         add_option<TOURNAMENT_SELECTION_K>(this);
+        add_option<STRIPE_FIT_FUNC>(this);
         
         
     }

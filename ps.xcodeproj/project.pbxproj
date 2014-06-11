@@ -21,12 +21,13 @@
 		48460691192D1FFE005579F9 /* libboost_serialization.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9915861785009863BE /* libboost_serialization.dylib */; };
 		48460692192D1FFE005579F9 /* libboost_signals.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9A15861785009863BE /* libboost_signals.dylib */; };
 		48460698192D2015005579F9 /* stripes_location.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 48460688192D1F22005579F9 /* stripes_location.cpp */; };
-		48DEB45819376501002F8846 /* libea.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EB67EE616F789C800111A41 /* libea.a */; };
-		48DEB45919376501002F8846 /* libboost_iostreams.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9615861785009863BE /* libboost_iostreams.dylib */; };
-		48DEB45A19376501002F8846 /* libboost_program_options.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9715861785009863BE /* libboost_program_options.dylib */; };
-		48DEB45B19376501002F8846 /* libboost_regex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9815861785009863BE /* libboost_regex.dylib */; };
-		48DEB45C19376501002F8846 /* libboost_serialization.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9915861785009863BE /* libboost_serialization.dylib */; };
-		48DEB45D19376501002F8846 /* libboost_signals.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9A15861785009863BE /* libboost_signals.dylib */; };
+		4853683A1947DD780001F386 /* libea.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EB67EE616F789C800111A41 /* libea.a */; };
+		4853683B1947DD780001F386 /* libboost_iostreams.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9615861785009863BE /* libboost_iostreams.dylib */; };
+		4853683C1947DD780001F386 /* libboost_program_options.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9715861785009863BE /* libboost_program_options.dylib */; };
+		4853683D1947DD780001F386 /* libboost_regex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9815861785009863BE /* libboost_regex.dylib */; };
+		4853683E1947DD780001F386 /* libboost_serialization.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9915861785009863BE /* libboost_serialization.dylib */; };
+		4853683F1947DD780001F386 /* libboost_signals.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9A15861785009863BE /* libboost_signals.dylib */; };
+		485368451947DD8F0001F386 /* stripes_res.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 485368351947DC920001F386 /* stripes_res.cpp */; };
 		48FF4C8819379E17001F0183 /* libea.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EB67EE616F789C800111A41 /* libea.a */; };
 		48FF4C8919379E17001F0183 /* libboost_iostreams.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9615861785009863BE /* libboost_iostreams.dylib */; };
 		48FF4C8A19379E17001F0183 /* libboost_program_options.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 42441A9715861785009863BE /* libboost_program_options.dylib */; };
@@ -55,7 +56,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
-		48DEB45E19376501002F8846 /* CopyFiles */ = {
+		485368401947DD780001F386 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -90,12 +91,13 @@
 		48460686192D1DFC005579F9 /* stripes_control */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stripes_control; sourceTree = BUILT_PRODUCTS_DIR; };
 		48460688192D1F22005579F9 /* stripes_location.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stripes_location.cpp; sourceTree = "<group>"; };
 		48460697192D1FFE005579F9 /* stripes_location */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stripes_location; sourceTree = BUILT_PRODUCTS_DIR; };
+		485368351947DC920001F386 /* stripes_res.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stripes_res.cpp; sourceTree = "<group>"; };
+		485368441947DD780001F386 /* stripes_res */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stripes_res; sourceTree = BUILT_PRODUCTS_DIR; };
 		487ACE221934BC8E0016340B /* lod_knockouts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lod_knockouts.h; sourceTree = "<group>"; };
 		48A1E129183F8ED70023C478 /* stripes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stripes.h; sourceTree = "<group>"; };
 		48AC8AB0193762F600DA6945 /* movie_multi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = movie_multi.h; sourceTree = "<group>"; };
 		48AC8AB11937639900DA6945 /* stripes_multi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stripes_multi.cpp; sourceTree = "<group>"; };
 		48C5840D19365A6900C02CA1 /* multi_founder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = multi_founder.h; sourceTree = "<group>"; };
-		48DEB46219376501002F8846 /* stripes */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stripes; sourceTree = BUILT_PRODUCTS_DIR; };
 		48FF4C9219379E17001F0183 /* stripes_multi */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = stripes_multi; sourceTree = BUILT_PRODUCTS_DIR; };
 		48FF4C941938A2C9001F0183 /* location_analysis.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = location_analysis.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -127,16 +129,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		48DEB45719376501002F8846 /* Frameworks */ = {
+		485368391947DD780001F386 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				48DEB45819376501002F8846 /* libea.a in Frameworks */,
-				48DEB45919376501002F8846 /* libboost_iostreams.dylib in Frameworks */,
-				48DEB45A19376501002F8846 /* libboost_program_options.dylib in Frameworks */,
-				48DEB45B19376501002F8846 /* libboost_regex.dylib in Frameworks */,
-				48DEB45C19376501002F8846 /* libboost_serialization.dylib in Frameworks */,
-				48DEB45D19376501002F8846 /* libboost_signals.dylib in Frameworks */,
+				4853683A1947DD780001F386 /* libea.a in Frameworks */,
+				4853683B1947DD780001F386 /* libboost_iostreams.dylib in Frameworks */,
+				4853683C1947DD780001F386 /* libboost_program_options.dylib in Frameworks */,
+				4853683D1947DD780001F386 /* libboost_regex.dylib in Frameworks */,
+				4853683E1947DD780001F386 /* libboost_serialization.dylib in Frameworks */,
+				4853683F1947DD780001F386 /* libboost_signals.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,8 +175,8 @@
 			children = (
 				48460686192D1DFC005579F9 /* stripes_control */,
 				48460697192D1FFE005579F9 /* stripes_location */,
-				48DEB46219376501002F8846 /* stripes */,
 				48FF4C9219379E17001F0183 /* stripes_multi */,
+				485368441947DD780001F386 /* stripes_res */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -195,6 +197,7 @@
 				48AC8AB11937639900DA6945 /* stripes_multi.cpp */,
 				48460676192D1D9D005579F9 /* stripes_control.cpp */,
 				48460688192D1F22005579F9 /* stripes_location.cpp */,
+				485368351947DC920001F386 /* stripes_res.cpp */,
 				487ACE221934BC8E0016340B /* lod_knockouts.h */,
 				48C5840D19365A6900C02CA1 /* multi_founder.h */,
 				48AC8AB0193762F600DA6945 /* movie_multi.h */,
@@ -254,21 +257,21 @@
 			productReference = 48460697192D1FFE005579F9 /* stripes_location */;
 			productType = "com.apple.product-type.tool";
 		};
-		48DEB45419376501002F8846 /* stripes */ = {
+		485368361947DD780001F386 /* stripes_res */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 48DEB45F19376501002F8846 /* Build configuration list for PBXNativeTarget "stripes" */;
+			buildConfigurationList = 485368411947DD780001F386 /* Build configuration list for PBXNativeTarget "stripes_res" */;
 			buildPhases = (
-				48DEB45519376501002F8846 /* Sources */,
-				48DEB45719376501002F8846 /* Frameworks */,
-				48DEB45E19376501002F8846 /* CopyFiles */,
+				485368371947DD780001F386 /* Sources */,
+				485368391947DD780001F386 /* Frameworks */,
+				485368401947DD780001F386 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = stripes;
+			name = stripes_res;
 			productName = ealife;
-			productReference = 48DEB46219376501002F8846 /* stripes */;
+			productReference = 485368441947DD780001F386 /* stripes_res */;
 			productType = "com.apple.product-type.tool";
 		};
 		48FF4C8419379E17001F0183 /* stripes_multi */ = {
@@ -311,8 +314,8 @@
 			targets = (
 				48460678192D1DFC005579F9 /* stripes_control */,
 				48460689192D1FFE005579F9 /* stripes_location */,
-				48DEB45419376501002F8846 /* stripes */,
 				48FF4C8419379E17001F0183 /* stripes_multi */,
+				485368361947DD780001F386 /* stripes_res */,
 			);
 		};
 /* End PBXProject section */
@@ -334,10 +337,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		48DEB45519376501002F8846 /* Sources */ = {
+		485368371947DD780001F386 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				485368451947DD8F0001F386 /* stripes_res.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,17 +400,17 @@
 			};
 			name = Release;
 		};
-		48DEB46019376501002F8846 /* Debug */ = {
+		485368421947DD780001F386 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = stripes;
+				PRODUCT_NAME = stripes_res;
 			};
 			name = Debug;
 		};
-		48DEB46119376501002F8846 /* Release */ = {
+		485368431947DD780001F386 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				PRODUCT_NAME = stripes;
+				PRODUCT_NAME = stripes_res;
 			};
 			name = Release;
 		};
@@ -454,11 +458,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		48DEB45F19376501002F8846 /* Build configuration list for PBXNativeTarget "stripes" */ = {
+		485368411947DD780001F386 /* Build configuration list for PBXNativeTarget "stripes_res" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				48DEB46019376501002F8846 /* Debug */,
-				48DEB46119376501002F8846 /* Release */,
+				485368421947DD780001F386 /* Debug */,
+				485368431947DD780001F386 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

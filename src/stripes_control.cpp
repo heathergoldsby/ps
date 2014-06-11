@@ -168,6 +168,8 @@ public:
         add_option<METAPOP_COMPETITION_PERIOD>(this);
         add_option<TOURNAMENT_SELECTION_N>(this);
         add_option<TOURNAMENT_SELECTION_K>(this);
+        add_option<STRIPE_FIT_FUNC>(this);
+
         
         
     }
