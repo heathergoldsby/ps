@@ -65,6 +65,8 @@ void eval_permute_stripes(EA& ea) {
     double six_fit_not = 0;
     double six_fit_nand = 0;
     
+    int num_right;
+    
     for (int x=0; x < get<SPATIAL_X>(ea); ++x) {
         for (int y=0; y<get<SPATIAL_Y>(ea); ++y){
             typename EA::environment_type::location_ptr_type l = ea.env().location(x,y);
@@ -300,7 +302,8 @@ struct stripes_replication : end_of_update_event<EA> {
                 inherits_from(germ, *o, p->ea());
                 
                 // clear founders...
-                p->ea().founder().clear();
+                p->ea().founder().clear(); // offspring
+
                 
                 int s = get<POPULATION_SIZE>(ea);
                 // and fill up the offspring population with copies of the germ:
@@ -318,22 +321,37 @@ struct stripes_replication : end_of_update_event<EA> {
 
                 offspring.push_back(p);
     
+                // track last fitness AND time to rep
+                multicell_rep.push_back(get<MULTICELL_REP_TIME>(*i));
+                multicell_last_fitness.push_back(get<STRIPE_FIT>(*i));
+                multicell_size.push_back(i->ea().size());
+                ++num_rep;
     
-                // reset resource units
+                // reset parent multicell
                 i->ea().env().reset_resources();
-                put<GROUP_RESOURCE_UNITS>(0,*i);
+                put<MC_RESOURCE_UNITS>(0,*i);
+                put<MULTICELL_REP_TIME>(0,*i);;
+                
+                i->ea().clear(); // kills existing population
+                int count =0;
+                
+                for(typename EA::individual_type::ea_type::population_type::iterator j=i->ea().founder().begin(); j!=i->ea().founder().end(); ++j) {
+                    int s = get<POPULATION_SIZE>(i->ea());
+                    std::size_t pos = i->ea().rng()(s);
+                    
+                    typename EA::individual_type::ea_type::individual_ptr_type o1 = i->ea().copy_individual(**j);
+                    o1->hw().initialize();
+                    i->ea().insert(i->ea().end(), o1);
+                    i->ea().env().swap_locations(count, pos);
+                    ++count;
+                }
+                
     
                 // i == parent individual;
                 typename EA::population_type parent_pop, offspring_pop;
                 parent_pop.push_back(*i.base());
                 offspring_pop.push_back(p);
                 inherits(parent_pop, offspring_pop, ea);
-    
-                // track last fitness AND time to rep
-                multicell_rep.push_back(get<MULTICELL_REP_TIME>(*i));
-                multicell_last_fitness.push_back(get<STRIPE_FIT>(*i));
-                multicell_size.push_back(i->ea().size());
-                ++num_rep;
                 
                 if (multicell_rep.size() > 100) {
                     multicell_rep.pop_front();
