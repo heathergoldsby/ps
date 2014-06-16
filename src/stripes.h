@@ -65,7 +65,6 @@ void eval_permute_stripes(EA& ea) {
     double six_fit_not = 0;
     double six_fit_nand = 0;
     
-    int num_right;
     
     for (int x=0; x < get<SPATIAL_X>(ea); ++x) {
         for (int y=0; y<get<SPATIAL_Y>(ea); ++y){
@@ -252,8 +251,8 @@ struct stripes_replication : end_of_update_event<EA> {
     //! Constructor.
     stripes_replication(EA& ea) : end_of_update_event<EA>(ea), _df("stripes_rep.dat") {
         _df.add_field("update")
-        .add_field("mean_res")
-        .add_field("max_res")
+        .add_field("mean_rep_time")
+        .add_field("last_resource_pull")
         .add_field("multicell_size")
         .add_field("replication_count");
         num_rep = 0;
@@ -334,6 +333,7 @@ struct stripes_replication : end_of_update_event<EA> {
                 put<MULTICELL_REP_TIME>(0,*i);
                 
                 i->ea().clear(); // kills existing population
+                i->ea().env().clear_env(i->ea()); 
                 int count =0;
                                 
                 for(typename EA::individual_type::ea_type::population_type::iterator j=i->ea().founder().begin(); j!=i->ea().founder().end(); ++j) {
