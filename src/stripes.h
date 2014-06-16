@@ -135,7 +135,7 @@ void eval_permute_stripes(EA& ea) {
         tmp_five_fit = (five_fit_not + 1)  * (five_fit_nand + 1);
         tmp_six_fit = (six_fit_not + 1)  * (six_fit_nand + 1);
         min_fit = 0;
-        max_fit = (((get<POPULATION_SIZE>(ea) / 2) + 1) ^2);
+        max_fit = pow(((get<POPULATION_SIZE>(ea) / 2) + 1), 2);
         break;
     }
     
@@ -254,6 +254,7 @@ struct stripes_replication : end_of_update_event<EA> {
         _df.add_field("update")
         .add_field("mean_res")
         .add_field("max_res")
+        .add_field("multicell_size")
         .add_field("replication_count");
         num_rep = 0;
     }
@@ -330,11 +331,11 @@ struct stripes_replication : end_of_update_event<EA> {
                 // reset parent multicell
                 i->ea().env().reset_resources();
                 put<MC_RESOURCE_UNITS>(0,*i);
-                put<MULTICELL_REP_TIME>(0,*i);;
+                put<MULTICELL_REP_TIME>(0,*i);
                 
                 i->ea().clear(); // kills existing population
                 int count =0;
-                
+                                
                 for(typename EA::individual_type::ea_type::population_type::iterator j=i->ea().founder().begin(); j!=i->ea().founder().end(); ++j) {
                     int s = get<POPULATION_SIZE>(i->ea());
                     std::size_t pos = i->ea().rng()(s);
