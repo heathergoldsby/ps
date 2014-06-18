@@ -43,7 +43,7 @@ LIBEA_MD_DECL(MULTICELL_REP_TIME, "ea.stripes.mc_rep_time", int);
 LIBEA_MD_DECL(MC_RESOURCE_UNITS, "ea.stripes.mc_res_units", int);
 LIBEA_MD_DECL(FIT_MAX, "ea.stripes.fit_max", int);
 LIBEA_MD_DECL(FIT_MIN, "ea.stripes.fit_min", int);
-LIBEA_MD_DECL(FIT_GAMMA, "ea.stripes.fit_gamma", int);
+LIBEA_MD_DECL(FIT_GAMMA, "ea.stripes.fit_gamma", double);
 
 
 
