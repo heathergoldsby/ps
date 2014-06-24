@@ -41,3 +41,12 @@ exe stripes_res :
 
 install dist : stripes_res : <location>$(HOME)/bin ;
 
+exe stripes_res_no_lod :
+    src/stripes_res_no_lod.cpp
+    /libea//libea
+    /libea//libea_runner
+    : <include>./include <link>static
+    ;
+
+install dist : stripes_res_no_lod : <location>$(HOME)/bin ;
+
