@@ -35,7 +35,9 @@
 using namespace ealib;
 
 
-LIBEA_MD_DECL(STRIPE_FIT, "ea.stripes.fit", int); // count the number of organisms that have the right color stripe
+LIBEA_MD_DECL(STRIPE_FIT, "ea.stripes.fit", int);
+LIBEA_MD_DECL(STRIPE_FIT_PT, "ea.stripes.fit.pt", int);
+
 LIBEA_MD_DECL(ANCESTOR, "ea.stripes.ancestor", int);
 LIBEA_MD_DECL(NUM_PROPAGULE_CELL, "ea.stripes.num_propagule_cell", int);
 LIBEA_MD_DECL(STRIPE_FIT_FUNC, "ea.stripes.fit_func", int); // 0 = sum; 1 = prod
@@ -150,6 +152,8 @@ void eval_permute_stripes(EA& ea) {
         tmp_fit = min_fit;
     }
     
+    
+    put<STRIPE_FIT_PT>(tmp_fit, ea);
     // rescale fitness!
     double rescaled_fit = (get<FIT_MAX>(ea) - get<FIT_MIN>(ea)) * pow (((tmp_fit - min_fit) / (max_fit - min_fit)), (get<FIT_GAMMA>(ea))) + get<FIT_MIN>(ea);
     
@@ -253,7 +257,8 @@ struct stripes_replication : end_of_update_event<EA> {
     stripes_replication(EA& ea) : end_of_update_event<EA>(ea), _df("stripes_rep.dat") {
         _df.add_field("update")
         .add_field("mean_rep_time")
-        .add_field("last_resource_pull")
+        .add_field("last_fitness")
+        .add_field("last_fitness_pt")
         .add_field("multicell_size")
         .add_field("replication_count");
         num_rep = 0;
@@ -266,9 +271,6 @@ struct stripes_replication : end_of_update_event<EA> {
     
     //! Perform germline replication among populations.
     virtual void operator()(EA& ea) {
-        using namespace boost::accumulators;
-        accumulator_set<double, stats<tag::mean, tag::max> > fit;
-        
         
             // See if any subpops have exceeded the resource threshold
             typename EA::population_type offspring;
@@ -279,7 +281,6 @@ struct stripes_replication : end_of_update_event<EA> {
                 
                 // copy the stripe fit to the accumulator and also the subpop
                 double sf =get<STRIPE_FIT>(i->ea());
-                fit(sf);
                 put<STRIPE_FIT>(sf, *i);
                 get<MC_RESOURCE_UNITS>(*i,0) += sf;
                 
@@ -327,6 +328,7 @@ struct stripes_replication : end_of_update_event<EA> {
                     multicell_rep.push_back(get<MULTICELL_REP_TIME>(*i));
                     multicell_last_fitness.push_back(get<STRIPE_FIT>(*i));
                     multicell_size.push_back(i->ea().size());
+                    multicell_last_fitness_pt.push_back(get<STRIPE_FIT_PT>(i->ea()));
                     ++num_rep;
                     
                     // reset parent multicell
@@ -359,6 +361,7 @@ struct stripes_replication : end_of_update_event<EA> {
                     if (multicell_rep.size() > 100) {
                         multicell_rep.pop_front();
                         multicell_last_fitness.pop_front();
+                        multicell_last_fitness_pt.pop_front();
                         multicell_size.pop_front();
                     }
                     
@@ -386,12 +389,14 @@ struct stripes_replication : end_of_update_event<EA> {
                 _df.write(ea.current_update())
                 .write(std::accumulate(multicell_rep.begin(), multicell_rep.end(), 0.0)/multicell_rep.size())
                 .write(std::accumulate(multicell_last_fitness.begin(), multicell_last_fitness.end(), 0.0)/multicell_last_fitness.size())
+                .write(std::accumulate(multicell_last_fitness_pt.begin(), multicell_last_fitness_pt.end(), 0.0)/multicell_last_fitness_pt.size())
                 .write(std::accumulate(multicell_size.begin(), multicell_size.end(), 0.0)/multicell_size.size())
                 .write(num_rep)
                 .endl();
                 num_rep = 0;
             } else {
                 _df.write(ea.current_update())
+                .write(0.0)
                 .write(0.0)
                 .write(0.0)
                 .write(0.0)
@@ -405,6 +410,7 @@ struct stripes_replication : end_of_update_event<EA> {
     datafile _df;
     std::deque<double> multicell_rep;
     std::deque<double> multicell_last_fitness;
+    std::deque<double> multicell_last_fitness_pt;
     std::deque<double> multicell_size;
     
     int num_rep;

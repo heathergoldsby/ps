@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "480FBF631959FEFD006919A5"
-               BuildableName = "stripes_res"
+               BuildableName = "stripes_res_no_lod"
                BlueprintName = "stripes_res_no_lod"
                ReferencedContainer = "container:ps.xcodeproj">
             </BuildableReference>
@@ -33,7 +33,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "480FBF631959FEFD006919A5"
-            BuildableName = "stripes_res"
+            BuildableName = "stripes_res_no_lod"
             BlueprintName = "stripes_res_no_lod"
             ReferencedContainer = "container:ps.xcodeproj">
          </BuildableReference>
@@ -52,7 +52,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "480FBF631959FEFD006919A5"
-            BuildableName = "stripes_res"
+            BuildableName = "stripes_res_no_lod"
             BlueprintName = "stripes_res_no_lod"
             ReferencedContainer = "container:ps.xcodeproj">
          </BuildableReference>
@@ -70,7 +70,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "480FBF631959FEFD006919A5"
-            BuildableName = "stripes_res"
+            BuildableName = "stripes_res_no_lod"
             BlueprintName = "stripes_res_no_lod"
             ReferencedContainer = "container:ps.xcodeproj">
          </BuildableReference>
