@@ -11,7 +11,7 @@ using namespace ealib;
 
 #include "stripes.h"
 #include "multi_founder.h"
-#include "movie_multi.h"
+#include "movie.h"
 #include "location_analysis.h"
 
 
@@ -163,7 +163,7 @@ public:
     }
     
     virtual void gather_tools() {
-        add_tool<ealib::analysis::movie_multi>(this);
+        add_tool<ealib::analysis::movie_res>(this);
         add_tool<ealib::analysis::lod_knockouts>(this);
         add_tool<ealib::analysis::location_analysis>(this);
         

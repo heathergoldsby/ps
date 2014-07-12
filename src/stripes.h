@@ -36,7 +36,7 @@ using namespace ealib;
 
 
 LIBEA_MD_DECL(STRIPE_FIT, "ea.stripes.fit", int);
-LIBEA_MD_DECL(STRIPE_FIT_PT, "ea.stripes.fit.pt", int);
+LIBEA_MD_DECL(STRIPE_FIT_PT, "ea.strip    es.fit.pt", int);
 
 LIBEA_MD_DECL(ANCESTOR, "ea.stripes.ancestor", int);
 LIBEA_MD_DECL(NUM_PROPAGULE_CELL, "ea.stripes.num_propagule_cell", int);
