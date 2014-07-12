@@ -229,12 +229,12 @@
 				48AC8AB11937639900DA6945 /* stripes_multi.cpp */,
 				48460676192D1D9D005579F9 /* stripes_control.cpp */,
 				48460688192D1F22005579F9 /* stripes_location.cpp */,
+				480FBF621959FE95006919A5 /* stripes_res_no_lod.cpp */,
 				485368351947DC920001F386 /* stripes_res.cpp */,
 				487ACE221934BC8E0016340B /* lod_knockouts.h */,
 				48C5840D19365A6900C02CA1 /* multi_founder.h */,
 				48AC8AB0193762F600DA6945 /* movie.h */,
 				48FF4C941938A2C9001F0183 /* location_analysis.h */,
-				480FBF621959FE95006919A5 /* stripes_res_no_lod.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";

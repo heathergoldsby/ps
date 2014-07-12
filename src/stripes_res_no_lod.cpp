@@ -11,8 +11,7 @@ using namespace ealib;
 
 #include "stripes.h"
 #include "multi_founder.h"
-#include "movie_multi.h"
-#include "location_analysis.h"
+
 
 
 //! Configuration object for an EA.
