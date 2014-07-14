@@ -319,8 +319,10 @@ struct stripes_replication : end_of_update_event<EA> {
                         p->ea().env().swap_locations(k, pos);
                         
                         // add org as founders
-                        p->ea().founder().insert(p->ea().founder().end(), p->ea().copy_individual(*o2));
+                        //p->ea().founder().insert(p->ea().founder().end(), p->ea().copy_individual(*o2));
                     }
+                    
+
                     
                     offspring.push_back(p);
                     
@@ -351,7 +353,7 @@ struct stripes_replication : end_of_update_event<EA> {
                         ++count;
                     }
                     
-                    
+
                     // i == parent individual;
                     typename EA::population_type parent_pop, offspring_pop;
                     parent_pop.push_back(*i.base());

@@ -63,6 +63,10 @@
             argument = "-c stripes-res.cfg"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-l checkpoint-100000.xml.gz --analyze movie_res --ea.analysis.input.filename lod-100000.xml.gz"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
