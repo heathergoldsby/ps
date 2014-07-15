@@ -254,12 +254,12 @@ void eval_permute_three_stripes(EA& ea) {
     }
     
     
-    put<STRIPE_FIT_PT>(tmp_fit, ea);
-    // rescale fitness!
-    double rescaled_fit = (get<FIT_MAX>(ea) - get<FIT_MIN>(ea)) * pow (((tmp_fit - min_fit) / (max_fit - min_fit)), (get<FIT_GAMMA>(ea))) + get<FIT_MIN>(ea);
-    
-    
-    put<STRIPE_FIT>(rescaled_fit,ea);
+    put<STRIPE_FIT>(tmp_fit, ea);
+//    // rescale fitness!
+//    double rescaled_fit = (get<FIT_MAX>(ea) - get<FIT_MIN>(ea)) * pow (((tmp_fit - min_fit) / (max_fit - min_fit)), (get<FIT_GAMMA>(ea))) + get<FIT_MIN>(ea);
+//    
+//    
+//    put<STRIPE_FIT>(rescaled_fit,ea);
 
 }
 
