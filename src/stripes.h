@@ -160,52 +160,200 @@ void eval_permute_stripes(EA& ea) {
 }
 
 template <typename EA>
+std::string get_last_task(int x, int y, EA& ea) {
+    typename EA::environment_type::location_ptr_type l = ea.env().location(x,y);
+    std::string lt = "";
+    if (l->occupied()) {
+        lt = get<LAST_TASK>(*(l->inhabitant()),"");
+    }
+    return lt;
+}
+
+template <typename EA>
 void eval_permute_three_stripes(EA& ea) {
 
     double num_correct = 0;
 
 
-    accumulator_set<double, stats<tag::mean, tag::max> > sfit;
-
-    std::deque<std::string> stripe_color;
-    stripe_color.push_back("not");
-    stripe_color.push_back("nand");
-    stripe_color.push_back("ornot");
+//    accumulator_set<double, stats<tag::mean, tag::max> > sfit;
+    int num_neighbors = 4;
+    std::vector<double> not_fit(num_neighbors);
+    std::vector<double> nand_fit(num_neighbors);
+    std::vector<double> ornot_fit(num_neighbors);
+    std::vector<double> total_fit(num_neighbors);
     
-
-    for (int s=0; s<3; ++s) {
-        num_correct = 0;
+    int max_x = get<SPATIAL_X>(ea);
+    int max_y = get<SPATIAL_Y>(ea);
     
-        for (int x=0; x < get<SPATIAL_X>(ea); ++x) {
-            for (int y=0; y<get<SPATIAL_Y>(ea); ++y){
-                typename EA::environment_type::location_ptr_type l = ea.env().location(x,y);
-                if (!l->occupied()) {
-                    continue;
-                }
+    for (int x=0; x < max_x; ++x) {
+        for (int y=0; y< max_y; ++y){
+            typename EA::environment_type::location_ptr_type l = ea.env().location(x,y);
+            if (!l->occupied()) {
+                continue;
+            }
                 
-                std::string lt = get<LAST_TASK>(*(l->inhabitant()),"");
+            std::string lt = get<LAST_TASK>(*(l->inhabitant()),"");
+            if (lt == "" ) { continue; }
+            
+            std::vector<double> temp_t_fit(num_neighbors);
+            
+            // Get the relevant neighbors...
+            // We only check NW (0) , N (1) , NE (2) , E (3) (the rest are covered as the grid moves)
+            int n = y - 1;
+            if (n < 0) { n += max_y; }
+            int w = x - 1;
+            if (w < 0) { w += max_x; }
+            int e = x + 1;
+            if (e > max_x) { e -= max_x; }
+            
+            // NW
+            if (lt == get_last_task(w, n, ea)) { ++temp_t_fit[0]; }
+            
+            // N
+            if (lt == get_last_task(x, n, ea)) { ++temp_t_fit[1]; }
 
-                int r = (x%3);
-                if (lt == stripe_color[r]) {
-                    ++num_correct;
-                }
-                
+            // NE
+            if (lt == get_last_task(e, n, ea)) { ++temp_t_fit[2]; }
+            
+            // E
+            if (lt == get_last_task(e, y, ea)) { ++temp_t_fit[3]; }
+            
+            if (lt == "not") {
+                not_fit[0] += temp_t_fit[0];
+                not_fit[1] += temp_t_fit[1];
+                not_fit[2] += temp_t_fit[2];
+                not_fit[3] += temp_t_fit[3];
+            } else if (lt == "nand") {
+                nand_fit[0] += temp_t_fit[0];
+                nand_fit[1] += temp_t_fit[1];
+                nand_fit[2] += temp_t_fit[2];
+                nand_fit[3] += temp_t_fit[3];
+            } else if (lt == "ornot") {
+                ornot_fit[0] += temp_t_fit[0];
+                ornot_fit[1] += temp_t_fit[1];
+                ornot_fit[2] += temp_t_fit[2];
+                ornot_fit[3] += temp_t_fit[3];
             }
         }
-        // change up the colors....
-        stripe_color.push_back(stripe_color[0]);
-        stripe_color.pop_front();
+    }
+
+    total_fit[0] = (not_fit[0] + 1) * (nand_fit[0] + 1) * (ornot_fit[0] + 1);
+    total_fit[1] = (not_fit[1] + 1) * (nand_fit[1] + 1) * (ornot_fit[1] + 1);
+    total_fit[2] = (not_fit[2] + 1) * (nand_fit[2] + 1) * (ornot_fit[2] + 1);
+    total_fit[3] = (not_fit[3] + 1) * (nand_fit[3] + 1) * (ornot_fit[3] + 1);
+    
+    double min_fit = 1;
+    double max_fit = pow((get<POPULATION_SIZE>(ea) / 3), 3);
+    
+    double tmp_fit = std::max(total_fit[0], total_fit[1]);
+    tmp_fit = std::max(tmp_fit, total_fit[2]);
+    tmp_fit = std::max(tmp_fit, total_fit[3]);
+    
+    if (tmp_fit < min_fit) {
+        tmp_fit = min_fit;
     }
     
-
+    
+    put<STRIPE_FIT_PT>(tmp_fit, ea);
+    // rescale fitness!
+    double rescaled_fit = (get<FIT_MAX>(ea) - get<FIT_MIN>(ea)) * pow (((tmp_fit - min_fit) / (max_fit - min_fit)), (get<FIT_GAMMA>(ea))) + get<FIT_MIN>(ea);
+    
+    
+    put<STRIPE_FIT>(rescaled_fit,ea);
 
 }
 
 
 
+/*! Compete to evolve 3 stripes
+ */
+template <typename EA>
+struct permute_three_stripes : periodic_event<METAPOP_COMPETITION_PERIOD,EA> {
+    permute_three_stripes(EA& ea) : periodic_event<METAPOP_COMPETITION_PERIOD,EA>(ea), _df("permute_stripes.dat") {
+        _df.add_field("update")
+        .add_field("mean_fitness")
+        .add_field("max_fitness");
+    }
+    
+    virtual ~permute_three_stripes() {
+    }
+    
+    virtual void operator()(EA& ea) {
+        using namespace boost::accumulators;
+        accumulator_set<double, stats<tag::mean, tag::max> > fit;
+        
+        
+        // calculate "fitness":
+        for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+            
+            eval_permute_three_stripes(i->ea());
+            
+            // copy the stripe fit to the accumulator and also the subpop
+            double sf =get<STRIPE_FIT>(i->ea());
+            fit(sf);
+            put<STRIPE_FIT>(sf, *i);
+            
+        }
+        
+        
+        _df.write(ea.current_update())
+        .write(mean(fit))
+        .write(max(fit))
+        .endl();
+        
+        std::size_t n=get<META_POPULATION_SIZE>(ea);
+        typename EA::population_type offspring; // container of (pointers to) subpopulations
+        recombine_n(ea.population(), offspring,
+                    selection::tournament < access::meta_data<STRIPE_FIT> > (n, ea.population(), ea),
+                    recombination::propagule_without_replacement(),
+                    n, ea);
+        
+        
+        
+        configurable_per_site m(get<GERM_MUTATION_PER_SITE_P>(ea));
+        int s = get<POPULATION_SIZE>(ea);
+        
+        // Mutate and fill each offspring multicell.
+        for(typename EA::population_type::iterator i=offspring.begin(); i!=offspring.end(); ++i) {
+            assert((*i)->ea().population().size() == 1);
+            
+            // clear founders...
+            (*i)->ea().founder().clear();
+            
+            // mutate it:
+            mutate(**((*i)->ea().population().begin()),m,(*i)->ea());
+            typename EA::individual_type::ea_type::individual_type g = (**((*i)->ea().population().begin()));
+            
+            // add first org as founder
+            (*i)->ea().founder().insert((*i)->ea().founder().end(), (*i)->ea().copy_individual(g));
+            
+            // and fill up the offspring population with copies of the germ:
+            for (int k=1; k<get<NUM_PROPAGULE_CELL>(ea); ++k) {
+                typename EA::individual_type::ea_type::individual_ptr_type o = (*i)->ea().copy_individual(g);
+                (*i)->insert((*i)->end(), o);
+                
+                // move to random location
+                std::size_t pos = (*i)->ea().rng()(s);
+                (*i)->ea().env().swap_locations(k, pos);
+                
+                // add org as founders
+                (*i)->ea().founder().insert((*i)->ea().founder().end(), (*i)->ea().copy_individual(*o));
+            }
+        }
+        
+        // swap populations
+        std::swap(ea.population(), offspring);
+        
+        
+    }
+    
+    datafile _df;
+};
 
 
-/*! Compete to evolve stripes -- even number rows nand; odd number rows not
+
+
+/*! Compete to evolve stripes
  */
 template <typename EA>
 struct permute_stripes : periodic_event<METAPOP_COMPETITION_PERIOD,EA> {

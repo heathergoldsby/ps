@@ -50,3 +50,11 @@ exe stripes_res_no_lod :
 
 install dist : stripes_res_no_lod : <location>$(HOME)/bin ;
 
+exe stripes_multi_3 :
+    src/stripes_multi_3.cpp
+    /libea//libea
+    /libea//libea_runner
+    : <include>./include <link>static
+    ;
+
+install dist : stripes_multi_3 : <location>$(HOME)/bin ;
