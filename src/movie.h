@@ -95,9 +95,7 @@ namespace ealib {
         
         int count = 0;
         int s = get<POPULATION_SIZE>(control_sp->ea());
-        
-        int q = i->ea().founder().size();
-        
+            
         
         for(typename EA::individual_type::ea_type::population_type::iterator j=i->ea().founder().begin(); j!=i->ea().founder().end(); ++j) {
             typename EA::individual_type::ea_type::individual_ptr_type o = i->ea().copy_individual(**j);

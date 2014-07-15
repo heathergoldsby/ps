@@ -48,8 +48,6 @@ LIBEA_MD_DECL(FIT_MIN, "ea.stripes.fit_min", int);
 LIBEA_MD_DECL(FIT_GAMMA, "ea.stripes.fit_gamma", double);
 LIBEA_MD_DECL(RES_UPDATE, "ea.stripes.res_update", double);
 
-
-
 template <typename EA>
 void eval_permute_stripes(EA& ea) {
     // vert stripes
@@ -96,7 +94,7 @@ void eval_permute_stripes(EA& ea) {
             }
             
             // Diagonal stripes
-            if (((x % 2) == 0) && ((y % 2) == 0 )) {
+            if ((x % 2) == (y % 2)) {
                 if(lt == "not") { ++five_fit_not; }
                 if (lt == "nand") { ++six_fit_nand; }
             } else {
@@ -159,6 +157,48 @@ void eval_permute_stripes(EA& ea) {
     
     
     put<STRIPE_FIT>(rescaled_fit,ea);
+}
+
+template <typename EA>
+void eval_permute_three_stripes(EA& ea) {
+
+    double num_correct = 0;
+
+
+    accumulator_set<double, stats<tag::mean, tag::max> > sfit;
+
+    std::deque<std::string> stripe_color;
+    stripe_color.push_back("not");
+    stripe_color.push_back("nand");
+    stripe_color.push_back("ornot");
+    
+
+    for (int s=0; s<3; ++s) {
+        num_correct = 0;
+    
+        for (int x=0; x < get<SPATIAL_X>(ea); ++x) {
+            for (int y=0; y<get<SPATIAL_Y>(ea); ++y){
+                typename EA::environment_type::location_ptr_type l = ea.env().location(x,y);
+                if (!l->occupied()) {
+                    continue;
+                }
+                
+                std::string lt = get<LAST_TASK>(*(l->inhabitant()),"");
+
+                int r = (x%3);
+                if (lt == stripe_color[r]) {
+                    ++num_correct;
+                }
+                
+            }
+        }
+        // change up the colors....
+        stripe_color.push_back(stripe_color[0]);
+        stripe_color.pop_front();
+    }
+    
+
+
 }
 
 
