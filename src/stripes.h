@@ -200,11 +200,17 @@ void eval_permute_three_stripes(EA& ea) {
             // Get the relevant neighbors...
             // We only check NW (0) , N (1) , NE (2) , E (3) (the rest are covered as the grid moves)
             int n = y - 1;
-            if (n < 0) { n += max_y; }
+            if (n < 0) {
+                n += max_y;
+            }
             int w = x - 1;
             if (w < 0) { w += max_x; }
             int e = x + 1;
-            if (e > max_x) { e -= max_x; }
+            if (e >= max_x) {
+                e -= max_x;
+            }
+            
+            
             
             // NW
             if (lt == get_last_task(w, n, ea)) { ++temp_t_fit[0]; }
