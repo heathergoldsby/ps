@@ -466,6 +466,10 @@ struct stripes_replication : end_of_update_event<EA> {
     //! Perform germline replication among populations.
     virtual void operator()(EA& ea) {
         
+        if ((ea.current_update() % get<RES_UPDATE>(ea,1)) == 0) {
+            
+    
+        
             // See if any subpops have exceeded the resource threshold
             typename EA::population_type offspring;
             for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
@@ -578,7 +582,8 @@ struct stripes_replication : end_of_update_event<EA> {
                 // and swap 'em in for the current population:
                 std::swap(ea.population(), survivors);
             }
-            
+        }
+        
         
         if ((ea.current_update() % 100) == 0) {
             if (multicell_rep.size() > 0) {
