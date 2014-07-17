@@ -155,7 +155,7 @@ public:
     }
     
     virtual void gather_tools() {
-        add_tool<ealib::analysis::movie_multi>(this);
+        add_tool<ealib::analysis::movie_multi_3>(this);
         add_tool<ealib::analysis::lod_knockouts>(this);
         add_tool<ealib::analysis::location_analysis>(this);
         
