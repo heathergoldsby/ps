@@ -46,7 +46,7 @@ LIBEA_MD_DECL(MC_RESOURCE_UNITS, "ea.stripes.mc_res_units", int);
 LIBEA_MD_DECL(FIT_MAX, "ea.stripes.fit_max", int);
 LIBEA_MD_DECL(FIT_MIN, "ea.stripes.fit_min", int);
 LIBEA_MD_DECL(FIT_GAMMA, "ea.stripes.fit_gamma", double);
-LIBEA_MD_DECL(RES_UPDATE, "ea.stripes.res_update", double);
+LIBEA_MD_DECL(RES_UPDATE, "ea.stripes.res_update", int);
 
 template <typename EA>
 void eval_permute_stripes(EA& ea) {
@@ -466,7 +466,8 @@ struct stripes_replication : end_of_update_event<EA> {
     //! Perform germline replication among populations.
     virtual void operator()(EA& ea) {
         
-        if ((ea.current_update() % get<RES_UPDATE>(ea,1)) == 0) {
+        int ru = get<RES_UPDATE>(ea,1);
+        if ((ea.current_update() % ru) == 0) {
             
     
         
