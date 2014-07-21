@@ -64,7 +64,7 @@ struct configuration : public default_configuration {
         append_isa<dec_propagule_size>(ea);
         append_isa<get_propagule_size>(ea);
         //
-        //        append_isa<become_soma>(ea);
+        append_isa<become_soma>(ea);
         //        append_isa<if_soma>(ea);
         //        append_isa<if_germ>(ea);
         
@@ -158,6 +158,7 @@ public:
         add_option<FIT_MIN>(this);
         add_option<FIT_GAMMA>(this);
         add_option<RES_UPDATE>(this);
+        add_option<PROP_SIZE_OPTION>(this);
         
         
     }

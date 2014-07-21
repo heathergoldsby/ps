@@ -37,7 +37,8 @@ using namespace ealib;
 
 
 LIBEA_MD_DECL(STRIPE_FIT, "ea.stripes.fit", int);
-LIBEA_MD_DECL(STRIPE_FIT_PT, "ea.strip    es.fit.pt", int);
+LIBEA_MD_DECL(STRIPE_FIT_PT, "ea.stripes.fit.pt", int);
+LIBEA_MD_DECL(GERM_STATUS, "ea.stripes.germ_status", int);
 
 LIBEA_MD_DECL(ANCESTOR, "ea.stripes.ancestor", int);
 LIBEA_MD_DECL(NUM_PROPAGULE_CELL, "ea.stripes.num_propagule_cell", int);
@@ -49,6 +50,7 @@ LIBEA_MD_DECL(FIT_MIN, "ea.stripes.fit_min", int);
 LIBEA_MD_DECL(FIT_GAMMA, "ea.stripes.fit_gamma", double);
 LIBEA_MD_DECL(RES_UPDATE, "ea.stripes.res_update", int);
 LIBEA_MD_DECL(PROP_SIZE, "ea.stripes.propagule_size", double);
+LIBEA_MD_DECL(PROP_SIZE_OPTION, "ea.stripes.propagule_size_option", int);
 
 
 //! Increment the propagule size suggested by the organism.
@@ -67,7 +69,9 @@ DIGEVO_INSTRUCTION_DECL(get_propagule_size){
     hw.setRegValue(hw.modifyRegister(), get<PROP_SIZE>(*p, 1.0));
 }
 
-
+DIGEVO_INSTRUCTION_DECL(become_soma) {
+    put<GERM_STATUS>(false,*p);
+}
 
 template <typename EA>
 void eval_permute_stripes(EA& ea) {
@@ -683,28 +687,11 @@ struct stripes_replication_evo_ps : end_of_update_event<EA> {
                 // track time since group rep
                 get<MULTICELL_REP_TIME>(*i,0) +=1;
                 
-                accumulator_set<double, stats<tag::median> > p_size;
                 
                 if (get<MC_RESOURCE_UNITS>(*i) > get<GROUP_REP_THRESHOLD>(*i)){
                     
-                    // figure out what the prop size should be...
-                    for (int x=0; x < get<SPATIAL_X>(i->ea()); ++x) {
-                        for (int y=0; y<get<SPATIAL_Y>(i->ea()); ++y){
-                            typename EA::individual_type::ea_type::environment_type::location_ptr_type l = i->ea().env().location(x,y);
-                            if (!l->occupied()) {
-                                continue;
-                            }
-                            
-                            p_size(get<PROP_SIZE>(*(l->inhabitant()),1));
-                            
-                        }
-                    }
-                    
-                    int ps = median(p_size);
-                    if (ps < 0) { ps = 1; }
-                    if (ps > get<POPULATION_SIZE>(ea)) { ps = get<POPULATION_SIZE>(ea); }
-                    
-                    
+                    // PS
+                    int ps = int_get_prop_size(i->ea());
                     
                     // find a germ -- we are picking the first cell, since they are genetically identical, it is ok.
                     typename EA::individual_type::ea_type::individual_type& germ= **(i->ea().population().begin());
@@ -731,8 +718,6 @@ struct stripes_replication_evo_ps : end_of_update_event<EA> {
                         std::size_t pos = p->ea().rng()(s);
                         p->ea().env().swap_locations(k, pos);
                     }
-                    
-                    
                     
                     offspring.push_back(p);
                     
@@ -835,5 +820,57 @@ struct stripes_replication_evo_ps : end_of_update_event<EA> {
     
     
 };
+
+
+
+template <typename EA>
+int int_get_prop_size(EA& ea) {
+    int ps = 0;
+    accumulator_set<double, stats<tag::median> > p_size;
+
+    switch (get<PROP_SIZE_OPTION>(ea,0)) {
+        case 0: { // config
+            ps = get<PROP_SIZE_OPTION>(ea,0);
+            break;
+        }
+        case 1:{ // vote
+            for (int x=0; x < get<SPATIAL_X>(ea); ++x) {
+                for (int y=0; y<get<SPATIAL_Y>(ea); ++y){
+                    typename EA::environment_type::location_ptr_type l = ea.env().location(x,y);
+                    if (!l->occupied()) {
+                        continue;
+                    }
+                    
+                    p_size(get<PROP_SIZE>(*(l->inhabitant()),1));
+                    
+                }
+            }
+            
+            int ps = median(p_size);
+            if (ps < 0) { ps = 1; }
+            if (ps > get<POPULATION_SIZE>(ea)) { ps = get<POPULATION_SIZE>(ea); }
+            break;
+        }
+        case 2: {// num germ
+            for (int x=0; x < get<SPATIAL_X>(ea); ++x) {
+                for (int y=0; y<get<SPATIAL_Y>(ea); ++y){
+                    typename EA::environment_type::location_ptr_type l = ea.env().location(x,y);
+                    if (!l->occupied()) {
+                        continue;
+                    }
+                    
+                    if (get<GERM_STATUS>(*(l->inhabitant()),1)) {
+                        ++ps;
+                    }
+                }
+            }
+            if (ps < 0) { ps = 1; }
+
+            break;
+        }
+    }
+    return ps;
+    
+}
 
 #endif
