@@ -58,3 +58,12 @@ exe stripes_multi_3 :
     ;
 
 install dist : stripes_multi_3 : <location>$(HOME)/bin ;
+
+exe stripes_evo_ps :
+    src/stripes_evo_ps.cpp
+    /libea//libea
+    /libea//libea_runner
+    : <include>./include <link>static
+    ;
+
+install dist : stripes_evo_ps : <location>$(HOME)/bin ;

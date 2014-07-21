@@ -14,6 +14,7 @@
 #include <boost/accumulators/statistics/stats.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
 #include <boost/accumulators/statistics/max.hpp>
+#include <boost/accumulators/statistics/median.hpp>
 
 
 #include <ea/digital_evolution.h>
@@ -47,6 +48,26 @@ LIBEA_MD_DECL(FIT_MAX, "ea.stripes.fit_max", int);
 LIBEA_MD_DECL(FIT_MIN, "ea.stripes.fit_min", int);
 LIBEA_MD_DECL(FIT_GAMMA, "ea.stripes.fit_gamma", double);
 LIBEA_MD_DECL(RES_UPDATE, "ea.stripes.res_update", int);
+LIBEA_MD_DECL(PROP_SIZE, "ea.stripes.propagule_size", double);
+
+
+//! Increment the propagule size suggested by the organism.
+DIGEVO_INSTRUCTION_DECL(inc_propagule_size){
+    get<PROP_SIZE>(*p, 1.0)++;
+}
+
+//! Decrement the propagule size suggested by the organism.
+DIGEVO_INSTRUCTION_DECL(dec_propagule_size){
+    double p1 = get<PROP_SIZE>(*p, 1.0);
+    p1 -= 1.0;
+}
+
+//! Get the propagule size suggested by the organism.
+DIGEVO_INSTRUCTION_DECL(get_propagule_size){
+    hw.setRegValue(hw.modifyRegister(), get<PROP_SIZE>(*p, 1.0));
+}
+
+
 
 template <typename EA>
 void eval_permute_stripes(EA& ea) {
@@ -608,6 +629,195 @@ struct stripes_replication : end_of_update_event<EA> {
         }
         
         }
+    
+    datafile _df;
+    std::deque<double> multicell_rep;
+    std::deque<double> multicell_last_fitness;
+    std::deque<double> multicell_last_fitness_pt;
+    std::deque<double> multicell_size;
+    
+    int num_rep;
+    
+    
+};
+
+
+//! Performs multicell replication using germ lines.
+template <typename EA>
+struct stripes_replication_evo_ps : end_of_update_event<EA> {
+    //! Constructor.
+    stripes_replication_evo_ps(EA& ea) : end_of_update_event<EA>(ea), _df("stripes_evo_ps.dat") {
+        _df.add_field("update")
+        .add_field("mean_rep_time")
+        .add_field("last_fitness")
+        .add_field("last_fitness_pt")
+        .add_field("multicell_size")
+        .add_field("replication_count");
+        num_rep = 0;
+    }
+    
+    
+    //! Destructor.
+    virtual ~stripes_replication_evo_ps() {
+    }
+    
+    //! Perform germline replication among populations.
+    virtual void operator()(EA& ea) {
+        
+        int ru = get<RES_UPDATE>(ea,1);
+        if ((ea.current_update() % ru) == 0) {
+            
+            // See if any subpops have exceeded the resource threshold
+            typename EA::population_type offspring;
+            for(typename EA::iterator i=ea.begin(); i!=ea.end(); ++i) {
+                
+                // Calc fitness for each subpop
+                eval_permute_stripes(i->ea());
+                
+                // copy the stripe fit to the accumulator and also the subpop
+                double sf =get<STRIPE_FIT>(i->ea());
+                put<STRIPE_FIT>(sf, *i);
+                get<MC_RESOURCE_UNITS>(*i,0) += sf;
+                
+                // track time since group rep
+                get<MULTICELL_REP_TIME>(*i,0) +=1;
+                
+                accumulator_set<double, stats<tag::median> > p_size;
+                
+                if (get<MC_RESOURCE_UNITS>(*i) > get<GROUP_REP_THRESHOLD>(*i)){
+                    
+                    // figure out what the prop size should be...
+                    for (int x=0; x < get<SPATIAL_X>(i->ea()); ++x) {
+                        for (int y=0; y<get<SPATIAL_Y>(i->ea()); ++y){
+                            typename EA::individual_type::ea_type::environment_type::location_ptr_type l = i->ea().env().location(x,y);
+                            if (!l->occupied()) {
+                                continue;
+                            }
+                            
+                            p_size(get<PROP_SIZE>(*(l->inhabitant()),1));
+                            
+                        }
+                    }
+                    
+                    int ps = median(p_size);
+                    if (ps < 0) { ps = 1; }
+                    if (ps > get<POPULATION_SIZE>(ea)) { ps = get<POPULATION_SIZE>(ea); }
+                    
+                    
+                    
+                    // find a germ -- we are picking the first cell, since they are genetically identical, it is ok.
+                    typename EA::individual_type::ea_type::individual_type& germ= **(i->ea().population().begin());
+                    germ.repr().resize(germ.hw().original_size());
+                    germ.hw().initialize();
+                    
+                    // setup the population (really, an ea):
+                    typename EA::individual_ptr_type p = ea.make_individual();
+                    
+                    // mutate it:
+                    configurable_per_site m(get<GERM_MUTATION_PER_SITE_P>(ea));
+                    mutate(germ,m,p->ea());
+                    
+                    typename EA::individual_type::ea_type::individual_ptr_type o=p->ea().copy_individual(germ.repr());
+                    inherits_from(germ, *o, p->ea());
+                    
+                    int s = get<POPULATION_SIZE>(ea);
+                    // and fill up the offspring population with copies of the germ:
+                    for (int k=0; k<ps; ++k) {
+                        typename EA::individual_type::ea_type::individual_ptr_type o2 = p->ea().copy_individual(*o);
+                        p->insert(p->end(), o2);
+                        
+                        // move to random location
+                        std::size_t pos = p->ea().rng()(s);
+                        p->ea().env().swap_locations(k, pos);
+                    }
+                    
+                    
+                    
+                    offspring.push_back(p);
+                    
+                    // track last fitness AND time to rep
+                    multicell_rep.push_back(get<MULTICELL_REP_TIME>(*i));
+                    multicell_last_fitness.push_back(get<STRIPE_FIT>(*i));
+                    multicell_size.push_back(i->ea().size());
+                    multicell_last_fitness_pt.push_back(get<STRIPE_FIT_PT>(i->ea()));
+                    ++num_rep;
+                    
+                    // reset parent multicell
+                    i->ea().env().reset_resources();
+                    put<MC_RESOURCE_UNITS>(0,*i);
+                    put<MULTICELL_REP_TIME>(0,*i);
+                    
+                    i->ea().clear(); // kills existing population
+                    i->ea().env().clear_env(i->ea());
+                    int count =0;
+                    
+                    for(typename EA::individual_type::ea_type::population_type::iterator j=i->ea().founder().begin(); j!=i->ea().founder().end(); ++j) {
+                        int s = get<POPULATION_SIZE>(i->ea());
+                        std::size_t pos = i->ea().rng()(s);
+                        
+                        typename EA::individual_type::ea_type::individual_ptr_type o1 = i->ea().copy_individual(**j);
+                        o1->hw().initialize();
+                        i->ea().insert(i->ea().end(), o1);
+                        i->ea().env().swap_locations(count, pos);
+                        ++count;
+                    }
+                    
+                    
+                    // i == parent individual;
+                    typename EA::population_type parent_pop, offspring_pop;
+                    parent_pop.push_back(*i.base());
+                    offspring_pop.push_back(p);
+                    inherits(parent_pop, offspring_pop, ea);
+                    
+                    if (multicell_rep.size() > 100) {
+                        multicell_rep.pop_front();
+                        multicell_last_fitness.pop_front();
+                        multicell_last_fitness_pt.pop_front();
+                        multicell_size.pop_front();
+                    }
+                    
+                }
+            }
+            
+            
+            // select surviving parent groups
+            if (offspring.size() > 0) {
+                int n = get<META_POPULATION_SIZE>(ea) - offspring.size();
+                
+                typename EA::population_type survivors;
+                select_n<selection::random< > >(ea.population(), survivors, n, ea);
+                
+                // add the offspring to the list of survivors:
+                survivors.insert(survivors.end(), offspring.begin(), offspring.end());
+                
+                // and swap 'em in for the current population:
+                std::swap(ea.population(), survivors);
+            }
+        }
+        
+        
+        if ((ea.current_update() % 100) == 0) {
+            if (multicell_rep.size() > 0) {
+                _df.write(ea.current_update())
+                .write(std::accumulate(multicell_rep.begin(), multicell_rep.end(), 0.0)/multicell_rep.size())
+                .write(std::accumulate(multicell_last_fitness.begin(), multicell_last_fitness.end(), 0.0)/multicell_last_fitness.size())
+                .write(std::accumulate(multicell_last_fitness_pt.begin(), multicell_last_fitness_pt.end(), 0.0)/multicell_last_fitness_pt.size())
+                .write(std::accumulate(multicell_size.begin(), multicell_size.end(), 0.0)/multicell_size.size())
+                .write(num_rep)
+                .endl();
+                num_rep = 0;
+            } else {
+                _df.write(ea.current_update())
+                .write(0.0)
+                .write(0.0)
+                .write(0.0)
+                .write(0.0)
+                .write(num_rep)
+                .endl();
+            }
+        }
+        
+    }
     
     datafile _df;
     std::deque<double> multicell_rep;
