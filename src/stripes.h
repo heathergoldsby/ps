@@ -652,6 +652,7 @@ struct stripes_replication_evo_ps : end_of_update_event<EA> {
         .add_field("last_fitness")
         .add_field("last_fitness_pt")
         .add_field("multicell_size")
+        .add_field("prop_size")
         .add_field("replication_count");
         num_rep = 0;
     }
@@ -740,6 +741,7 @@ struct stripes_replication_evo_ps : end_of_update_event<EA> {
                     multicell_last_fitness.push_back(get<STRIPE_FIT>(*i));
                     multicell_size.push_back(i->ea().size());
                     multicell_last_fitness_pt.push_back(get<STRIPE_FIT_PT>(i->ea()));
+                    multicell_prop_size.push_back(ps);
                     ++num_rep;
                     
                     // reset parent multicell
@@ -774,6 +776,7 @@ struct stripes_replication_evo_ps : end_of_update_event<EA> {
                         multicell_last_fitness.pop_front();
                         multicell_last_fitness_pt.pop_front();
                         multicell_size.pop_front();
+                        multicell_prop_size.pop_front();
                     }
                     
                 }
@@ -803,11 +806,13 @@ struct stripes_replication_evo_ps : end_of_update_event<EA> {
                 .write(std::accumulate(multicell_last_fitness.begin(), multicell_last_fitness.end(), 0.0)/multicell_last_fitness.size())
                 .write(std::accumulate(multicell_last_fitness_pt.begin(), multicell_last_fitness_pt.end(), 0.0)/multicell_last_fitness_pt.size())
                 .write(std::accumulate(multicell_size.begin(), multicell_size.end(), 0.0)/multicell_size.size())
+                .write(std::accumulate(multicell_prop_size.begin(), multicell_prop_size.end(), 0.0)/multicell_prop_size.size())
                 .write(num_rep)
                 .endl();
                 num_rep = 0;
             } else {
                 _df.write(ea.current_update())
+                .write(0.0)
                 .write(0.0)
                 .write(0.0)
                 .write(0.0)
@@ -824,6 +829,7 @@ struct stripes_replication_evo_ps : end_of_update_event<EA> {
     std::deque<double> multicell_last_fitness;
     std::deque<double> multicell_last_fitness_pt;
     std::deque<double> multicell_size;
+    std::deque<double> multicell_prop_size;
     
     int num_rep;
     
