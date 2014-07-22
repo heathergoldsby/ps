@@ -846,8 +846,8 @@ int int_get_prop_size(EA& ea) {
                 }
             }
             
-            int ps = median(p_size);
-            if (ps < 0) { ps = 1; }
+            ps = median(p_size);
+            if ( ps < 1 ) { ps = 1; }
             if (ps > get<POPULATION_SIZE>(ea)) { ps = get<POPULATION_SIZE>(ea); }
             break;
         }
@@ -864,7 +864,7 @@ int int_get_prop_size(EA& ea) {
                     }
                 }
             }
-            if (ps < 0) { ps = 1; }
+            if ( ps < 1 ) { ps = 1; }
 
             break;
         }
