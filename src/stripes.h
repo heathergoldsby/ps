@@ -51,22 +51,23 @@ LIBEA_MD_DECL(FIT_GAMMA, "ea.stripes.fit_gamma", double);
 LIBEA_MD_DECL(RES_UPDATE, "ea.stripes.res_update", int);
 LIBEA_MD_DECL(PROP_SIZE, "ea.stripes.propagule_size", double);
 LIBEA_MD_DECL(PROP_SIZE_OPTION, "ea.stripes.propagule_size_option", int);
+LIBEA_MD_DECL(PROP_SIZE_BOUND, "ea.stripes.propagule_size_bound", int);
 
 
 //! Increment the propagule size suggested by the organism.
 DIGEVO_INSTRUCTION_DECL(inc_propagule_size){
-    get<PROP_SIZE>(*p, 1.0)++;
+    get<PROP_SIZE>(*p, get<NUM_PROPAGULE_CELL>(ea))++;
 }
 
 //! Decrement the propagule size suggested by the organism.
 DIGEVO_INSTRUCTION_DECL(dec_propagule_size){
-    double p1 = get<PROP_SIZE>(*p, 1.0);
+    double p1 = get<PROP_SIZE>(*p, get<NUM_PROPAGULE_CELL>(ea));
     p1 -= 1.0;
 }
 
 //! Get the propagule size suggested by the organism.
 DIGEVO_INSTRUCTION_DECL(get_propagule_size){
-    hw.setRegValue(hw.modifyRegister(), get<PROP_SIZE>(*p, 1.0));
+    hw.setRegValue(hw.modifyRegister(), get<PROP_SIZE>(*p, get<NUM_PROPAGULE_CELL>(ea)));
 }
 
 DIGEVO_INSTRUCTION_DECL(become_soma) {
@@ -693,6 +694,16 @@ struct stripes_replication_evo_ps : end_of_update_event<EA> {
                     // PS
                     int ps = int_get_prop_size(i->ea());
                     
+                    // DO WE CHECK FOR SANE PROP SIZE?
+                    if (get<PROP_SIZE_BOUND>(ea) == 1) {
+                        if ( ps < 1 ) { ps = 1; }
+                    }
+                    
+                    if (ps < 1) {
+                        continue;
+                    }
+
+                    
                     // find a germ -- we are picking the first cell, since they are genetically identical, it is ok.
                     typename EA::individual_type::ea_type::individual_type& germ= **(i->ea().population().begin());
                     germ.repr().resize(germ.hw().original_size());
@@ -841,13 +852,12 @@ int int_get_prop_size(EA& ea) {
                         continue;
                     }
                     
-                    p_size(get<PROP_SIZE>(*(l->inhabitant()),1));
+                    p_size(get<PROP_SIZE>(*(l->inhabitant()),get<NUM_PROPAGULE_CELL>(ea)));
                     
                 }
             }
             
             ps = median(p_size);
-            if ( ps < 1 ) { ps = 1; }
             if (ps > get<POPULATION_SIZE>(ea)) { ps = get<POPULATION_SIZE>(ea); }
             break;
         }
@@ -864,7 +874,6 @@ int int_get_prop_size(EA& ea) {
                     }
                 }
             }
-            if ( ps < 1 ) { ps = 1; }
 
             break;
         }

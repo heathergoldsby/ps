@@ -159,6 +159,7 @@ public:
         add_option<FIT_GAMMA>(this);
         add_option<RES_UPDATE>(this);
         add_option<PROP_SIZE_OPTION>(this);
+        add_option<PROP_SIZE_BOUND>(this);
         
         
     }
